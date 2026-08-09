@@ -1,0 +1,81 @@
+# Project Context: Full-Stack Calculator
+
+## Objective
+Build a full-stack calculator: React frontend + Go backend, communicating
+via a REST API. Priority: correctness, clarity, and maintainability over
+extra features. Realistic time budget: ~4 hours of work.
+
+## Security / files off-limits
+- `.env` files (backend or frontend) must never be read, analyzed, opened,
+  or included in any AI prompt or context — in Cursor or any other tool.
+- Never suggest committing `.env` to git; both `/backend/.env` and
+  `/frontend/.env` must be listed in `.gitignore`.
+- Instead, create and commit `.env.example` (backend and frontend) with
+  the same variable names but placeholder/non-sensitive values, so the
+  reviewer can `cp .env.example .env` and fill in their own local config.
+- If a task seems to require reading `.env` content, stop and ask me
+  directly instead of opening the file.
+
+## Working style
+Treat this as pair programming, not autopilot. For non-trivial decisions
+(architecture, package structure, error-handling strategy, library choices,
+test design), propose the approach and explain the trade-off briefly —
+wait for my approval before implementing. For trivial/mechanical steps
+(boilerplate, formatting, obvious fixes), just implement directly without
+asking. If I say "just do it" or give a direct instruction, skip the
+approval step for that task.
+
+## Developer context
+I come from a stronger Java background than Go. When generating Go code,
+prioritize **idiomatic** conventions (naming, explicit `error` handling,
+standard package layout `cmd/`, `internal/`, avoiding patterns "translated"
+from Java such as exceptions or heavy classes). If there's a more idiomatic
+way to solve something, prefer it and briefly explain why in the response.
+
+## Stack and constraints
+- Backend: Go (no heavy frameworks; standard net/http, or chi/gorilla mux if it adds clarity)
+- Frontend: React + TypeScript
+- Communication: REST, JSON
+- Testing: unit tests on both layers + coverage report
+- Local deploy: Docker Compose (NOT Kubernetes — out of scope)
+
+## Endpoint spec (backend)
+Base path: `/api/v1`
+
+| Method | Route           | Body                            | Success response          | Errors                             |
+|--------|-----------------|----------------------------------|-----------------------------|--------------------------------------|
+| POST   | `/add`          | `{ "a": number, "b": number }`   | `{ "result": number }`      | 400 if field missing or invalid type |
+| POST   | `/subtract`     | same                              | same                         | same                                  |
+| POST   | `/multiply`     | same                              | same                         | same                                  |
+| POST   | `/divide`       | same                              | same                         | 400 if `b == 0` (division by zero)   |
+| POST   | `/exponent`     | `{ "base": number, "exp": number }` | `{ "result": number }`   | 400 if invalid type                   |
+| POST   | `/sqrt`         | `{ "a": number }`                | `{ "result": number }`      | 400 if `a < 0`                        |
+| POST   | `/percentage`   | `{ "a": number, "b": number }`   | `{ "result": number }` (a% of b) | 400 if invalid type              |
+
+Standard error format:
+```json
+{ "error": "clear description of the problem" }
+```
+
+## Code conventions
+- Thin handlers: validation → call to pure logic function → response
+- Arithmetic logic functions separated and testable without HTTP involved
+- Explicit error handling in Go (never `panic` for expected errors like invalid input)
+- File and package names in English, lowercase, no unusual underscores
+
+## Testing
+- Backend: `go test -cover ./...`, cover happy path + edge cases (division by zero, negative numbers in sqrt, invalid input)
+- Frontend: at least tests for key components (input, validation, result/error rendering)
+- Process: before writing any tests, first list out the test cases you plan
+  to cover (happy path + edge cases) for my review. I'll confirm the list or
+  ask you to add missing cases. Only after I approve the list, implement the
+  actual tests — then I'll review the implementation before we move on.
+
+## Documentation
+- README including: setup, how to run (locally and with Docker Compose), curl examples per endpoint, design decisions
+- Separate PROMPTS.md: key prompts used in Cursor + what was accepted/modified from each response
+
+## What to avoid
+- No Kubernetes, no multiple microservices, no over-engineering
+- No unnecessary dependencies — keep it simple and readable
+- Don't skip error handling "to save time"
