@@ -1,0 +1,8 @@
+server
+*.exe
+*.test
+coverage.*
+*.out
+.env
+.env.*
+!.env.example

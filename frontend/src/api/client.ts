@@ -14,12 +14,25 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Returns the API origin. An empty string means same-origin requests, which
+ * is what Docker Compose uses: nginx proxies /api/* to the backend service.
+ */
 function apiBaseUrl(): string {
   const base = import.meta.env.VITE_API_BASE_URL
-  if (typeof base !== 'string' || base.trim() === '') {
-    throw new Error('VITE_API_BASE_URL is not configured')
+  if (base === undefined || base === null) {
+    return ''
   }
-  return base.replace(/\/$/, '')
+  if (typeof base !== 'string') {
+    throw new Error('VITE_API_BASE_URL must be a string')
+  }
+  return base.trim().replace(/\/$/, '')
+}
+
+function apiUrl(path: string): string {
+  const normalized = path.startsWith('/') ? path : `/${path}`
+  const base = apiBaseUrl()
+  return base === '' ? normalized : `${base}${normalized}`
 }
 
 /**
@@ -30,7 +43,7 @@ export async function calculate(
   operation: Operation,
   body: Record<string, number>,
 ): Promise<number> {
-  const response = await fetch(`${apiBaseUrl()}/api/v1/${operation}`, {
+  const response = await fetch(apiUrl(`/api/v1/${operation}`), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify(body),
