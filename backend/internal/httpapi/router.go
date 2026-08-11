@@ -25,6 +25,16 @@ func NewRouter(allowedOrigins []string) http.Handler {
 
 	r.Get("/health", handleHealth)
 
+	r.Route("/api/v1", func(r chi.Router) {
+		r.Post("/add", handleAdd)
+		r.Post("/subtract", handleSubtract)
+		r.Post("/multiply", handleMultiply)
+		r.Post("/divide", handleDivide)
+		r.Post("/exponent", handleExponent)
+		r.Post("/sqrt", handleSqrt)
+		r.Post("/percentage", handlePercentage)
+	})
+
 	return r
 }
 
