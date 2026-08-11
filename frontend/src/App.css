@@ -1,11 +1,148 @@
 .app {
-  max-width: 28rem;
-  margin: 2rem auto;
-  padding: 0 1rem;
-  font-family: system-ui, sans-serif;
+  max-width: 24rem;
+  margin: 2.5rem auto;
+  padding: 0 1rem 2rem;
 }
 
 .app h1 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+  margin: 0 0 1.25rem;
+  font-size: 1.6rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.calculator {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.field-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field input,
+.field select,
+.calculator .submit {
+  font: inherit;
+  border-radius: 0.4rem;
+  border: 1px solid #c4c4c8;
+  padding: 0.55rem 0.7rem;
+  background: #fff;
+  color: inherit;
+  width: 100%;
+}
+
+.field input {
+  padding-right: 2.1rem;
+}
+
+.field input:focus,
+.field select:focus,
+.calculator .submit:focus-visible,
+.field-clear:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+
+.field input[aria-invalid='true'] {
+  border-color: #b91c1c;
+}
+
+.field-clear {
+  position: absolute;
+  right: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #52525b;
+  font: inherit;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.field-clear:hover {
+  background: #f4f4f5;
+  color: #18181b;
+}
+
+.field-error {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #b91c1c;
+}
+
+.calculator .submit {
+  margin-top: 0.25rem;
+  cursor: pointer;
+  background: #18181b;
+  color: #fafafa;
+  border-color: #18181b;
+  font-weight: 600;
+}
+
+.calculator .submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.result {
+  margin-top: 0.35rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 0.4rem;
+  border: 1px solid #d4d4d8;
+  background: #fafafa;
+}
+
+.result strong {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+
+.result p {
+  margin: 0;
+  font-size: 1.15rem;
+  word-break: break-word;
+}
+
+.result-ok {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.result-error {
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.result-empty {
+  color: #71717a;
+}
+
+.result-empty p {
+  font-size: 0.95rem;
 }

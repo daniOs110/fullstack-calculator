@@ -1,12 +1,72 @@
-import type { Operation } from './types'
+import type {
+  ErrorResponse,
+  Operation,
+  ResultResponse,
+} from './types'
+
+export class ApiError extends Error {
+  readonly status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
+  }
+}
+
+function apiBaseUrl(): string {
+  const base = import.meta.env.VITE_API_BASE_URL
+  if (typeof base !== 'string' || base.trim() === '') {
+    throw new Error('VITE_API_BASE_URL is not configured')
+  }
+  return base.replace(/\/$/, '')
+}
 
 /**
- * HTTP client for /api/v1/* endpoints.
- * Implementation comes in the next frontend iteration.
+ * Calls POST /api/v1/{operation} with a body that must contain only the fields
+ * that operation expects — never extra keys (backend rejects unknown fields).
  */
 export async function calculate(
-  _operation: Operation,
-  _body: Record<string, number>,
+  operation: Operation,
+  body: Record<string, number>,
 ): Promise<number> {
-  throw new Error('api client not implemented yet')
+  const response = await fetch(`${apiBaseUrl()}/api/v1/${operation}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(body),
+  })
+
+  const payload: unknown = await response.json().catch(() => null)
+
+  if (!response.ok) {
+    const message =
+      isErrorResponse(payload) && payload.error
+        ? payload.error
+        : `request failed with status ${response.status}`
+    throw new ApiError(message, response.status)
+  }
+
+  if (!isResultResponse(payload)) {
+    throw new ApiError('unexpected response from server', response.status)
+  }
+
+  return payload.result
+}
+
+function isErrorResponse(value: unknown): value is ErrorResponse {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'error' in value &&
+    typeof (value as ErrorResponse).error === 'string'
+  )
+}
+
+function isResultResponse(value: unknown): value is ResultResponse {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'result' in value &&
+    typeof (value as ResultResponse).result === 'number'
+  )
 }
